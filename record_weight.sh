@@ -63,8 +63,12 @@ fi
 if [ ! -d "${XDG_DATA_HOME}/fit_todoman" ];then
     mkdir -p "${XDG_DATA_HOME}/fit_todoman"
     touch "${XDG_DATA_HOME}/fit_todoman/weight.csv"
+else
+    if [ ! -f "${XDG_DATA_HOME}/fit_todoman/weight.csv" ];then
+        touch "${XDG_DATA_HOME}/fit_todoman/weight.csv"
+    fi
 fi
-
+RECORDFILE="${XDG_DATA_HOME}/fit_todoman/weight.csv"
 
 if [ -f "${XDG_CONFIG_HOME}/fit_todoman.ini" ];then
     INIFILE="${XDG_CONFIG_HOME}/fit_todoman.ini"
