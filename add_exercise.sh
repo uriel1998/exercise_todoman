@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# grep sed awk detox
-
 ##############################################################################
 #  fit_todoman
 #  Some simple exercise tracking / adding scripts using todoman
+#  This script is to add exercises to a todo list; it is intended to be 
+#  run at midnight.  Hopefully making a cronjob doesn't bork it.
 #  (c) Steven Saus 2025
 #  Licensed under the MIT license
 #
@@ -75,7 +75,7 @@ else
 fi
 
 # get list to use from INI
-LIST=$(grep "LIST_TO_USE" "${INIFILE}" | awk -F '=' '{print $2}')
+LIST=$(grep "LIST_TO_USE" "${INIFILE}" | grep -ve "^#" | awk -F '=' '{print $2}')
 
 
 found=0

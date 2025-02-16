@@ -1,10 +1,109 @@
 #!/bin/bash
 
 
-# Find config
-# location for weight storage CSV
+##############################################################################
+# Variables
+##############################################################################
+
+VERSION="0.1.0"
+export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+LOUD=1
+DAYOFWEEK=$(date +%A)
+DATE=$(date +%Y-%m-%d)
+TIME=$(date +%H:%M)
+UNITS=""
+
+function loud() {
+##############################################################################
+# loud outputs on stderr 
+##############################################################################    
+    if [ $LOUD -eq 1 ];then
+        echo "$@" 1>&2
+    fi
+}
+
+display_help(){
+##############################################################################
+# Show the Help
+##############################################################################    
+    echo "###################################################################"
+    echo "# Standalone: /path/to/FILENAME.sh [options]"
+    echo "# Info ############################################################"
+    echo "# --help:  show help "
+    echo "# --readme: display the README on the console"
+    echo "# Usage ###########################################################"    
+    echo "###################################################################"
+}
+
+
+###############################################################################
+# Establishing XDG directories, or creating them if needed.
+# Find config ini file
+############################################################################### 
+
+
+if [ -z "${XDG_DATA_HOME}" ];then
+    export XDG_DATA_HOME="${HOME}/.local/share"
+    export XDG_CONFIG_HOME="${HOME}/.config"
+    export XDG_CACHE_HOME="${HOME}/.cache"
+fi
+
+if [ ! -d "${XDG_CONFIG_HOME}" ];then
+    loud "Your XDG_CONFIG_HOME variable is not properly set and does not exist."
+    exit 99
+fi
+
+if [ ! -d "${XDG_DATA_HOME}" ];then
+    loud "Your XDG_DATA_HOME variable is not properly set and does not exist."
+    exit 99
+fi
+
+#Just create the recording file if it doesn't exist
+if [ ! -d "${XDG_DATA_HOME}/fit_todoman" ];then
+    mkdir -p "${XDG_DATA_HOME}/fit_todoman"
+    touch "${XDG_DATA_HOME}/fit_todoman/weight.csv"
+fi
+
+
+if [ -f "${XDG_CONFIG_HOME}/fit_todoman.ini" ];then
+    INIFILE="${XDG_CONFIG_HOME}/fit_todoman.ini"
+else 
+    if [ -f "${SCRIPT_DIR}/fit_todoman.ini" ];then
+        INIFILE="${SCRIPT_DIR}/fit_todoman.ini"
+    else
+        loud "Config file does not exist in ${XDG_CONFIG_HOME} or ${SCRIPT_DIR}!"
+        exit 99
+    fi
+fi
+
+UNITS=$(grep "UNITS" "${INIFILE}" | grep -ve "^#" | awk -F '=' '{print $2}')
+if [ "$UNITS" == "" ];then
+    UNITS=LB
+fi
+
+# Display a YAD form with fields for Weight, Time, and Date.
+result=$(yad --form \
+    --title="Enter Data" \
+    --text="Please enter your weight (in $UNITS), time, and date:" \
+    --field="Weight" "" \
+    --field="Time" "$TIME" \
+    --field="Date" "$DATE" \
+    --width=400 --height=200)
+
+# Check if the user pressed OK (exit status 0)
+if [ $? -eq 0 ]; then
+    # YAD returns the field values separated by '|'
+    IFS="|" read -r weight time date <<< "$result"
+    echo "Weight: $weight"
+    echo "Time: $time"
+    echo "Date: $date"
+else
+    echo "Operation cancelled by the user."
+fi
+
+
 # YAD popup
-# get date, time
+
 # weight (kg or lbs), date and time (prefilled, but editable)
 # check if date or time has changed, if so, change variable.
 # also get epoch time
