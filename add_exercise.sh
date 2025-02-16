@@ -16,11 +16,12 @@
 
 VERSION="0.1.0"
 export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-LOUD=0
+LOUD=1
 DAYOFWEEK=$(date +%A)
 DATE=$(date +%Y-%m-%d)
 LIST=""
 INIFILE=""
+TODO_BIN=$(which todo)
 
 function loud() {
 ##############################################################################
@@ -74,7 +75,7 @@ else
 fi
 
 # get list to use from INI
-LIST=$(grep "LIST_TO_USE" "${INIFILE}")
+LIST=$(grep "LIST_TO_USE" "${INIFILE}" | awk -F '=' '{print $2}')
 
 
 found=0
@@ -98,9 +99,9 @@ while IFS= read -r line; do
         # Note separator is a semicolon
         # if HHMM is empty, substitute 00:00
         # run it at midnight, add each line as a task
-        exercise_description=$(echo "${line}" | awk '{ print $1 }' | sed 's|["]|“|g' | sed 's|['\'']|’|g' | detox --inline)
+        exercise_description=$(echo "${line}" | awk -F ';' '{ print $1 }' | sed 's|["]|“|g' | sed 's|['\'']|’|g' | detox --inline)
             #extra sed to unsmarten stray quotes, also detox            
-        exercise_time=$(echo "${line}" | awk '{ print $2 }')
+        exercise_time=$(echo "${line}" | awk -F ';' '{ print $2 }')
         if [[ $exercise_time =~ ^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$ ]]; then
             loud "Valid time format"
         else
@@ -111,7 +112,12 @@ while IFS= read -r line; do
             todo new \""${exercise_description}"\" -d $DATE $exercise_time --list \"${LIST}\"
         else
             #no special list used
-            todo new \""${exercise_description}"\" -d $DATE $exercise_time 
+            exec_string=$(printf "%s new \"%s\" -d %s %s" "${TODO_BIN}" "${exercise_description}" "${DATE}" "${exercise_time}")
+            if [ $LOUD -eq 1 ];then
+                eval "$exec_string" 
+            else
+                eval "$exec_string" 2>/dev/null 1>/dev/null
+            fi
         fi
         
     fi
