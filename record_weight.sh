@@ -12,6 +12,7 @@ DAYOFWEEK=$(date +%A)
 DATE=$(date +%Y-%m-%d)
 TIME=$(date +%H:%M)
 UNITS=""
+WEIGHT=""
 
 function loud() {
 ##############################################################################
@@ -84,7 +85,7 @@ fi
 # Display a YAD form with fields for Weight, Time, and Date.
 result=$(yad --form \
     --title="Enter Data" \
-    --text="Please enter your weight (in $UNITS), time, and date:" \
+    --text="Please enter your weight (in $UNITS), time (24h clock), and date:" \
     --field="Weight" "" \
     --field="Time" "$TIME" \
     --field="Date" "$DATE" \
@@ -93,24 +94,28 @@ result=$(yad --form \
 # Check if the user pressed OK (exit status 0)
 if [ $? -eq 0 ]; then
     # YAD returns the field values separated by '|'
-    IFS="|" read -r weight time date <<< "$result"
-    echo "Weight: $weight"
-    echo "Time: $time"
-    echo "Date: $date"
+    IFS="|" read -r WEIGHT time date <<< "$result"
+    echo "Weight: $WEIGHT"
+    if [ "$WEIGHT" == "" ];then 
+        loud "Error: Weight not entered."
+        exit 98
+    fi
+    # Re-saving these in case they were edited by the user if non-zero
+    if [ "$TIME" != "" ];then
+        TIME="$time"
+    fi
+    if [ "$DATE" != "" ];then
+        DATE="$date"
+    fi
+    EPOCH=$(date -d "$DATE $TIME" +%s)
+    # record in CSV
+    # format - EPOCH,WEIGHT,DATE,TIME
+    printf "%s,%s,%s,%s" $EPOCH $WEIGHT $DATE $TIME 
+    
 else
     echo "Operation cancelled by the user."
 fi
 
 
-# YAD popup
-
-# weight (kg or lbs), date and time (prefilled, but editable)
-# check if date or time has changed, if so, change variable.
-# also get epoch time
-# if lbs nonzero, convert to kgs, but keep in separate variable
-# if lbs != 0, AND kgs != 0, weight == the larger of the two
-# otherwise, take whichever is nonzero
-# record in CSV
-# format - WEIGHT,DATE,TIME,EPOCH
 
 

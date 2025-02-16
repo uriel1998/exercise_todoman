@@ -10,3 +10,5 @@ dirname
 readline
 XDG directories appropriately configured
 date
+
+TODO: Convert on input from 12 if checkbox marked
