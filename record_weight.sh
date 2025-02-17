@@ -1,5 +1,13 @@
 #!/bin/bash
 
+##############################################################################
+#  fit_todoman
+#  Some simple exercise tracking / adding scripts using todoman
+#  This script is to record your weight in a simple CSV file
+#  (c) Steven Saus 2025
+#  Licensed under the MIT license
+#
+##############################################################################
 
 ##############################################################################
 # Variables
@@ -114,8 +122,7 @@ if [ $? -eq 0 ]; then
     EPOCH=$(date -d "$DATE $TIME" +%s)
     # record in CSV
     # format - EPOCH,WEIGHT,DATE,TIME
-    printf "%s,%s,%s,%s" $EPOCH $WEIGHT $DATE $TIME 
-    
+    printf "%s,%s,%s,%s" $EPOCH $WEIGHT $DATE $TIME >> "${RECORDFILE}"
 else
     echo "Operation cancelled by the user."
 fi
