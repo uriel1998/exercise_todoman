@@ -10,5 +10,6 @@ dirname
 readline
 XDG directories appropriately configured
 date
+gnuplot
 
 TODO: Convert on input from 12 if checkbox marked

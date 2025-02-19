@@ -22,7 +22,8 @@ TIME=$(date +%H:%M)
 UNITS=""
 WEIGHT=""
 TEMPFILE=$(mktemp)
-DURATION=""
+BACKTIME=""
+DATALINES=""
 
 function loud() {
 ##############################################################################
@@ -93,10 +94,22 @@ if [ "$UNITS" == "" ];then
     UNITS=LB
 fi
 
-#How many records back
-#Default of 30 records (assuming 1 a day)
-# command line switch of -d [number] for number of days back
-# determine EPOCH time of DURATION days back as EPOCHBACK
+if [ "${1}" == "-d" ];then
+    BACKTIME="${2}"
+else
+    BACKTIME="30"
+fi
+STARTTIME=$(date --date="$BACKTIME days ago" +%s)
+
+while IFS=, read -r column1 rest; do
+    if [[ "$column1" -gt "${STARTTIME}" ]]; then
+        echo "$column1,$rest" >> "${TEMPFILE}"
+    fi
+done < "${RECORDFILE}"
+
+DATALINES=$(cat "${TEMPFILE}" | wc -l)
+# needed for gnuplot template
+
 # readlines, if $line's epoch date > $EPOCHBACK, copy to tempfile
 # determine # of lines in tempfile for use in gnuplot template
 
