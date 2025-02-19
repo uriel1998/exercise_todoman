@@ -101,35 +101,35 @@ else
 fi
 STARTTIME=$(date --date="$BACKTIME days ago" +%s)
 
+echo "date,weight" > "${TEMPFILE}"
+
 while IFS=, read -r column1 rest; do
     if [[ "$column1" -gt "${STARTTIME}" ]]; then
-        echo "$column1,$rest" >> "${TEMPFILE}"
+        echo "$rest" | awk -F ',' '{print $2"@"$3","$4"}' >> "${TEMPFILE}"
     fi
 done < "${RECORDFILE}"
 
 DATALINES=$(cat "${TEMPFILE}" | wc -l)
 # needed for gnuplot template
 
-# readlines, if $line's epoch date > $EPOCHBACK, copy to tempfile
-# determine # of lines in tempfile for use in gnuplot template
+#set up GNUPLOT template
+OUTFILE="${XDG_DATA_HOME}/fit_todoman/weight_graph.png"
+GNUPLOT="${XDG_CONFIG_HOME}/fit_todoman/plot_weight.gnuplot"
+# may need to change these to printf statements
+echo -e "set datafile separator ','" > "${GNUPLOT}"
+echo -e "set key autotitle columnhead" >> "${GNUPLOT}"
+echo -e "set xdata time" >> "${GNUPLOT}"
+echo -e "set timefmt \"%m-%d-%Y@%H:%M\"" >> "${GNUPLOT}"
+echo -e "set format x \"%m-%d\"" >> "${GNUPLOT}"
+echo -e "set ylabel \"Weight ($UNITS)\"" >> "${GNUPLOT}"
+echo -e "set xlabel 'Time'" >> "${GNUPLOT}"
+echo -e "set style line 101 lw 3 lt rgb \"#859900\"" >> "${GNUPLOT}"
+echo -e "set xtics rotate" >> "${GNUPLOT}"
+echo -e "set terminal pngcairo size 400,300 enhanced font 'Segoe UI,10'" >> "${GNUPLOT}"
 
-
-
-
+# do we need to put something in here to limit data due to lines?
+printf "set output \'%s\'\n" "${OUTFILE}" >> "${GNUPLOT}"
+printf "plot \"%s\" using 1:2 with lines ls 101\n" "${TEMPFILE}" >> "${GNUPLOT}"
     
-    
-    
-    
-    # loud "Creating table for $hours_count."
-    out_datafile="${DATA_DIR}"/"${hours_count}".csv
-    out_image="${OUT_DIR}"/"${hours_count}"_hours.png
-    echo "date,metric,lat,long,alt" > "${out_datafile}"
-    tail -${lines} "${INFILE}" | awk -F ',' '{print $1"@"$2","$3","$4","$5}' | sed 's/\./\:/' >> "${out_datafile}"
-    loud "Creating Gnuplot for ${hours_count}"
-    cat "${SCRIPT_DIR}"/plot_gnuplot_stub.txt > "${SCRIPT_DIR}"/plot_me.gnuplot
-    printf "set output \'%s\'\n" "${out_image}" >> "${SCRIPT_DIR}"/plot_me.gnuplot
-    printf "plot \"%s\" using 1:2 with lines ls 101\n" "${out_datafile}" >> "${SCRIPT_DIR}"/plot_me.gnuplot
-    loud "Creating graph for ${hours_count}"
-    gnuplot -p "${SCRIPT_DIR}"/plot_me.gnuplot
-    out_image=""
-    out_datafile=""
+loud "Creating graph for ${BACKTIME} days"
+gnuplot -p "${GNUPLOT}"

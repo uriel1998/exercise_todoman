@@ -121,8 +121,8 @@ if [ $? -eq 0 ]; then
     fi
     EPOCH=$(date -d "$DATE $TIME" +%s)
     # record in CSV
-    # format - EPOCH,WEIGHT,DATE,TIME
-    printf "%s,%s,%s,%s" $EPOCH $WEIGHT $DATE $TIME >> "${RECORDFILE}"
+    # format - EPOCH,DATE,TIME,WEIGHT
+    printf "%s,%s,%s,%s" $EPOCH $DATE $TIME $WEIGHT >> "${RECORDFILE}"
 else
     echo "Operation cancelled by the user."
 fi
