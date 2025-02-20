@@ -105,7 +105,7 @@ echo "date,weight" > "${TEMPFILE}"
 
 while IFS=, read -r column1 rest; do
     if [[ "$column1" -gt "${STARTTIME}" ]]; then
-        echo "$rest" | awk -F ',' '{print $2"@"$3","$4"}' >> "${TEMPFILE}"
+        echo "$rest" | awk -F ',' '{ print $1"@"$2","$3 }' >> "${TEMPFILE}"
     fi
 done < "${RECORDFILE}"
 
@@ -114,12 +114,12 @@ DATALINES=$(cat "${TEMPFILE}" | wc -l)
 
 #set up GNUPLOT template
 OUTFILE="${XDG_DATA_HOME}/fit_todoman/weight_graph.png"
-GNUPLOT="${XDG_CONFIG_HOME}/fit_todoman/plot_weight.gnuplot"
+GNUPLOT="${XDG_DATA_HOME}/fit_todoman/plot_weight.gnuplot"
 # may need to change these to printf statements
 echo -e "set datafile separator ','" > "${GNUPLOT}"
 echo -e "set key autotitle columnhead" >> "${GNUPLOT}"
 echo -e "set xdata time" >> "${GNUPLOT}"
-echo -e "set timefmt \"%m-%d-%Y@%H:%M\"" >> "${GNUPLOT}"
+echo -e "set timefmt \"%Y-%m-%d@%H:%M\"" >> "${GNUPLOT}"
 echo -e "set format x \"%m-%d\"" >> "${GNUPLOT}"
 echo -e "set ylabel \"Weight ($UNITS)\"" >> "${GNUPLOT}"
 echo -e "set xlabel 'Time'" >> "${GNUPLOT}"
