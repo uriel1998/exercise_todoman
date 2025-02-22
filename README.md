@@ -13,3 +13,6 @@ date
 gnuplot
 
 TODO: Convert on input from 12 if checkbox marked
+
+Test cronjob (sigh)
+test cronjob for reminders?

@@ -21,7 +21,6 @@ DAYOFWEEK=$(date +%A)
 DATE=$(date +%Y-%m-%d)
 LIST=""
 INIFILE=""
-TODO_BIN=$(which todo)
 
 function loud() {
 ##############################################################################
@@ -76,6 +75,7 @@ fi
 
 # get list to use from INI
 LIST=$(grep "LIST_TO_USE" "${INIFILE}" | grep -ve "^#" | awk -F '=' '{print $2}')
+TODO_BIN=$(grep "TODO_BIN" "${INIFILE}" | grep -ve "^#" | awk -F '=' '{print $2}')
 
 
 found=0
@@ -109,7 +109,7 @@ while IFS= read -r line; do
             exercise_time="20:00"
         fi
         if [ "$LIST" != "" ];then
-            todo new \""${exercise_description}"\" -d $DATE $exercise_time --list \"${LIST}\"
+            "${TODO_BIN}" new \""${exercise_description}"\" -d $DATE $exercise_time --list \"${LIST}\"
         else
             #no special list used
             exec_string=$(printf "%s new \"%s\" -d %s %s" "${TODO_BIN}" "${exercise_description}" "${DATE}" "${exercise_time}")
