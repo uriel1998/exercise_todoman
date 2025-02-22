@@ -13,7 +13,6 @@
 ##############################################################################
 # Variables
 ##############################################################################
-
 VERSION="0.1.0"
 export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 LOUD=1
@@ -109,11 +108,12 @@ while IFS= read -r line; do
             exercise_time="20:00"
         fi
         if [ "$LIST" != "" ];then
-            "${TODO_BIN}" new \""${exercise_description}"\" -d $DATE $exercise_time --list \"${LIST}\"
+            "${TODO_BIN}" new \""${exercise_description}"\" -d $DATE $exercise_time --list \"${LIST}\"  
         else
             #no special list used
             exec_string=$(printf "%s new \"%s\" -d %s %s" "${TODO_BIN}" "${exercise_description}" "${DATE}" "${exercise_time}")
-            if [ $LOUD -eq 1 ];then
+            echo "$exec_string" 
+            if [ $LOUD -eq 1 ];then 
                 eval "$exec_string" 
             else
                 eval "$exec_string" 2>/dev/null 1>/dev/null
