@@ -57,9 +57,24 @@ fi
 # get list to use from INI
 LIST=$(grep "LIST_TO_USE" "${INIFILE}" | grep -ve "^#" | awk -F '=' '{print $2}')
 TODO_BIN=$(grep "TODO_BIN" "${INIFILE}" | grep -ve "^#" | awk -F '=' '{print $2}')
+if [ "$LIST" != "" ];then
+    TheTasks=$("${TODO_BIN}" list --grep @exercise \"${LIST}\")
+else
+    TheTasks=$("${TODO_BIN}" list --grep @exercise)
+fi
+
+# Get today's date in YYYY-MM-DD format
+current_date=$(date +%F)
 
 
-# read in todo list
-# filter by @exercise
-# find all from prior day
-# delete them
+# Loop through each line and check the date
+echo "$TheTasks" | while IFS= read -r line; do
+  # Extract the task number and the date
+  task_number=$(echo "$line" | awk '{print $2}')
+  task_date=$(echo "$line" | awk '{print $3}')
+
+  # Compare the dates
+  if [[ "$task_date" < "$current_date" ]]; then
+    echo "$task_number"
+  fi
+done
