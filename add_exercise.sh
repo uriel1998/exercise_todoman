@@ -108,10 +108,10 @@ while IFS= read -r line; do
             exercise_time="20:00"
         fi
         if [ "$LIST" != "" ];then
-            "${TODO_BIN}" new \""${exercise_description}"\" -d $DATE $exercise_time --list \"${LIST}\"  
+            "${TODO_BIN}" new \""${exercise_description}" @exercise \" -d $DATE $exercise_time --list \"${LIST}\"  
         else
             #no special list used
-            exec_string=$(printf "%s new \"%s\" -d %s %s" "${TODO_BIN}" "${exercise_description}" "${DATE}" "${exercise_time}")
+            exec_string=$(printf "%s new \"%s\" @exercise -d %s %s" "${TODO_BIN}" "${exercise_description}" "${DATE}" "${exercise_time}")
             echo "$exec_string" 
             if [ $LOUD -eq 1 ];then 
                 eval "$exec_string" 

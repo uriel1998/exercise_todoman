@@ -60,5 +60,6 @@ TODO_BIN=$(grep "TODO_BIN" "${INIFILE}" | grep -ve "^#" | awk -F '=' '{print $2}
 
 
 # read in todo list
+# filter by @exercise
 # find all from prior day
 # delete them
