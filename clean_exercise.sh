@@ -75,6 +75,7 @@ echo "$TheTasks" | while IFS= read -r line; do
 
   # Compare the dates
   if [[ "$task_date" < "$current_date" ]]; then
-    echo "$task_number"
+    loud "$task_number was before today: ${line}"
+    # "${TODO_BIN}" delete "$task_number"
   fi
 done
