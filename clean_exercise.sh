@@ -70,9 +70,9 @@ current_date=$(date +%F)
 # Loop through each line and check the date
 echo "$TheTasks" | while IFS= read -r line; do
   # Extract the task number and the date
-  task_number=$(echo "$line" | awk '{print $2}')
-  task_date=$(echo "$line" | awk '{print $3}')
-
+  task_number=$(echo "$line" | awk '{print $3}')
+  task_date=$(echo "$line" | awk '{print $4}')
+    echo "$task_number AND $task_date"
   # Compare the dates
   if [[ "$task_date" < "$current_date" ]]; then
     loud "$task_number was before today: ${line}"

@@ -17,7 +17,7 @@ XDG directories appropriately configured
 date
 gnuplot
 
-TODO: Convert on input from 12 if checkbox marked
-
-
+TODO: 
+Convert on input from 12hr if checkbox marked
+show_exercise
 test cronjob for reminders?
